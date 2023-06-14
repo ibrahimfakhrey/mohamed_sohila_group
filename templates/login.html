@@ -9,13 +9,15 @@
 <div class="body"></div>
 		<div class="grad"></div>
 		<div class="header">
-			<div>Site<span>Random</span></div>
+			<div>ِAMS<span>GPT</span></div>
 		</div>
 		<br>
 		<div class="login">
+			<form action="{{ url_for('login') }}" method="post">
 				<input type="text" placeholder="username" name="user"><br>
 				<input type="password" placeholder="password" name="password"><br>
-				<input type="button" value="Login">
+				<input type="submit" value="Login">
+				</form>
 		</div>
 </body>
 </html>

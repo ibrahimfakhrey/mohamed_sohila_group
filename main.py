@@ -1,5 +1,12 @@
-from flask import Flask,render_template,request
+from flask import Flask, render_template, request, redirect
+
 app=Flask(__name__)
+
+users={
+    "mohamed":"0000",
+    "ali":"1234",
+    "omar":"1122"
+}
 @app.route("/")
 def start():
     return render_template("index.html")
@@ -9,13 +16,27 @@ def login():
     if request.method=="POST":
         name=request.form.get("user")
         password=request.form.get("password")
-        if name =="abdullah" and password=="1234":
-            return "my secret is that programming is interesting "
-        else:
-            return "you are not abdullah try again "
+        for key in users:
+            if name ==key:
+                if password==users[key]:
+                    return "my secret is that programming is interesting "
+
+
+
+
+        return redirect("/register")
 
     return render_template("login.html")
 
+
+@app.route("/register",methods=["GET","POST"])
+def register():
+    if request.method=="POST":
+        name = request.form.get("user")
+        password = request.form.get("password")
+        users[name]=password
+        return redirect("/login")
+    return render_template("register.html")
 
 
 

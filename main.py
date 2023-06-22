@@ -1,5 +1,17 @@
 from flask import Flask, render_template, request, redirect
+import requests
+import datetime
 
+lat = "30.357519"
+lon = "31.204611"
+api_key = "3eab6e609ad2c6909fd44c6a6d1a5dac"
+
+
+url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
+response = requests.get(url=url)
+data = response.json()
+temperature_kelvin = data['main']['temp']
+temp_celsius = int(temperature_kelvin) - 272
 app=Flask(__name__)
 
 users={
@@ -39,7 +51,16 @@ def register():
     return render_template("register.html")
 
 
+@app.route("/weather")
+def w():
+    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
+    response = requests.get(url=url)
+    data = response.json()
+    temperature_kelvin = data['main']['temp']
+    temp_celsius = int(temperature_kelvin) - 272
+    date=datetime.date.today()
 
+    return render_template("w.html",temp=temp_celsius,date=date)
 
 if __name__=="__main__":
     app.run(debug=True)

@@ -37,7 +37,7 @@ with app.app_context():
     db.create_all()
 class MyModelView(ModelView):
     def is_accessible(self):
-            return False
+            return True
 
 admin = Admin(app)
 admin.add_view(MyModelView(User, db.session))
@@ -50,15 +50,25 @@ def login():
     if request.method=="POST":
         name=request.form.get("user")
         password=request.form.get("password")
-        for key in users:
-            if name ==key:
-                if password==users[key]:
-                    return "my secret is that programming is interesting "
+        users=User.query.all()
+        for user in users:
+            if name ==user.name and password==user.password:
+                url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
+                response = requests.get(url=url)
+                data = response.json()
+                temperature_kelvin = data['main']['temp']
+                temp_celsius = int(temperature_kelvin) - 272
+                date = datetime.date.today()
 
-
-
+                return render_template("w.html", temp=temp_celsius, date=date)
 
         return redirect("/register")
+
+
+
+
+
+
 
     return render_template("login.html")
 
@@ -68,21 +78,19 @@ def register():
     if request.method=="POST":
         name = request.form.get("user")
         password = request.form.get("password")
-        users[name]=password
+        phone=request.form.get("phone")
+        new_user=User(
+            name=name,
+            phone=phone,
+            password=password
+        )
+        db.session.add(new_user)
+        db.session.commit()
         return redirect("/login")
     return render_template("register.html")
 
 
-@app.route("/weather")
-def w():
-    url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
-    response = requests.get(url=url)
-    data = response.json()
-    temperature_kelvin = data['main']['temp']
-    temp_celsius = int(temperature_kelvin) - 272
-    date=datetime.date.today()
 
-    return render_template("w.html",temp=temp_celsius,date=date)
 
 if __name__=="__main__":
     app.run(debug=True)

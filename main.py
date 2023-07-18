@@ -41,6 +41,8 @@ class MyModelView(ModelView):
 
 admin = Admin(app)
 admin.add_view(MyModelView(User, db.session))
+
+
 @app.route("/")
 def start():
     return render_template("index.html")
@@ -89,8 +91,27 @@ def register():
         return redirect("/login")
     return render_template("register.html")
 
+@app.route("/test")
+def test():
+    url = "https://bing-news-search1.p.rapidapi.com/news"
+
+    querystring = {"safeSearch": "Off", "textFormat": "Raw"}
+
+    headers = {
+        "X-BingApis-SDK": "true",
+        "X-RapidAPI-Key": "d5045bdcf9mshd5e94b5c4e690c3p1f8c50jsn05c7c5e6e1de",
+        "X-RapidAPI-Host": "bing-news-search1.p.rapidapi.com"
+    }
+
+    response = requests.get(url, headers=headers, params=querystring)
+    data=response.json()
+    news=[]
+    for i in range(11):
+        news.append(data["value"][i]["name"])
 
 
 
+    print(news)
+    return render_template("news.html",news=news)
 if __name__=="__main__":
     app.run(debug=True)
